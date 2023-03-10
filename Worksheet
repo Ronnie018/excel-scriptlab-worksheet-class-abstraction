@@ -1,0 +1,33 @@
+interface WorksheetType {
+  xlWorksheet: Excel.Worksheet,
+  context: Excel.RequestContext
+}
+
+class Worksheet implements Worksheet{
+  xlWorksheet: Excel.Worksheet;
+  context: Excel.RequestContext;
+
+  async getWorksheet(context: Excel.RequestContext, name?: string): Promise<Excel.Worksheet> {
+    // gets current worksheet or another if specified
+    this.context = context;
+    if (name) {
+      return await context.workbook.worksheets.getItem(name);
+    }
+    return await context.workbook.worksheets.getActiveWorksheet();
+  }
+
+  async setWorksheet(name: string){
+    return await this.context.workbook.worksheets.getItem(name);
+  }
+
+  async init(context, name = null) {
+    this.xlWorksheet = await this.getWorksheet(context, name);
+    return this;
+  }
+
+  async getCell(pos) {
+    const elm = await this.xlWorksheet.getRange(pos);
+    elm.select()
+    return elm
+  }
+}
